@@ -11,7 +11,7 @@ import Event from "../database/models/event.model";
 import Order from "../database/models/order.model";
 
 // Create User
-export const createUser = async (user: CreateUserParams) => {
+export async function createUser(user: CreateUserParams) {
   try {
     await connectToDatabase();
 
@@ -21,7 +21,7 @@ export const createUser = async (user: CreateUserParams) => {
   } catch (error) {
     handleError(error);
   }
-};
+}
 
 // Get User
 export async function getUserById(userId: string) {
