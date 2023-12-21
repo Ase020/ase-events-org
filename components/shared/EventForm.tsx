@@ -1,8 +1,13 @@
 "use client";
 
+import { useState } from "react";
+import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,8 +23,6 @@ import { eventDefaultValues } from "@/constants";
 import Dropdown from "./Dropdown";
 import { Textarea } from "../ui/textarea";
 import { FileUploader } from "./FileUploader";
-import { useState } from "react";
-import Image from "next/image";
 
 type EventFormProps = {
   userId: string;
@@ -171,10 +174,47 @@ const EventForm = ({ userId, type }: EventFormProps) => {
                       Start Date:{" "}
                     </p>
 
-                    <Input
-                      placeholder="Event Location or Online"
-                      {...field}
-                      className="input-field"
+                    <DatePicker
+                      selected={field.value}
+                      onChange={(date: Date) => field.onChange(date)}
+                      showTimeSelect
+                      timeInputLabel="Time:"
+                      dateFormat="dd/MM/yyyy h:mm aa"
+                      wrapperClassName="datePicker"
+                    />
+                  </div>
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="endDateTime"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormControl>
+                  <div className="flex-center h-[54px] w-full overflow-hidden rounded-full px-4 bg-grey-50 py-2">
+                    <Image
+                      src="/assets/icons/calendar.svg"
+                      alt="calendar"
+                      height={24}
+                      width={24}
+                      className="filter-grey"
+                    />
+
+                    <p className="ml-3 whitespace-nowrap text-grey-600 ">
+                      End Date:{" "}
+                    </p>
+
+                    <DatePicker
+                      selected={field.value}
+                      onChange={(date: Date) => field.onChange(date)}
+                      showTimeSelect
+                      timeInputLabel="Time:"
+                      dateFormat="dd/MM/yyyy h:mm aa"
+                      wrapperClassName="datePicker"
                     />
                   </div>
                 </FormControl>
