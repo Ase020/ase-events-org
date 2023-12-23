@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import DatePicker from "react-datepicker";
+import { useUploadThing } from "@/lib/uploadthing";
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -24,6 +26,7 @@ import Dropdown from "./Dropdown";
 import { Textarea } from "../ui/textarea";
 import { FileUploader } from "./FileUploader";
 import { Checkbox } from "../ui/checkbox";
+import { createEvent } from "@/lib/actions/event.action";
 
 type EventFormProps = {
   userId: string;
@@ -34,6 +37,9 @@ const EventForm = ({ userId, type }: EventFormProps) => {
   const initialValues = eventDefaultValues;
   const [files, setFiles] = useState<File[]>([]);
 
+  const { startUpload } = useUploadThing("imageUploader");
+  const router = useRouter();
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof eventFormSchema>>({
     resolver: zodResolver(eventFormSchema),
@@ -41,9 +47,36 @@ const EventForm = ({ userId, type }: EventFormProps) => {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof eventFormSchema>) {
+  async function onSubmit(values: z.infer<typeof eventFormSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+    let uploadedImageUrl = values.imageUrl;
+
+    if (files.length > 0) {
+      const uploadedImages = await startUpload(files);
+
+      if (!uploadedImages) {
+        return;
+      }
+
+      uploadedImageUrl = uploadedImages[0].url;
+    }
+    if (type === "Create") {
+      try {
+        const newEvent = await createEvent({
+          event: { ...values, imageUrl: uploadedImageUrl },
+          userId,
+          path: "/profile",
+        });
+
+        if (newEvent) {
+          form.reset();
+          router.push(`/events/${newEvent._id}`);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
     console.log(values);
   }
 
@@ -110,7 +143,7 @@ const EventForm = ({ userId, type }: EventFormProps) => {
           />
           <FormField
             control={form.control}
-            name="description"
+            name="imageUrl"
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormControl className="h-72">
@@ -264,6 +297,8 @@ const EventForm = ({ userId, type }: EventFormProps) => {
                               </label>
                               <Checkbox
                                 id="isFree"
+                                onCheckedChange={field.onChange}
+                                checked={field.value}
                                 className="mr-2 h-5 w-5 border-2 border-primary-500"
                               />
                             </div>
@@ -307,7 +342,15 @@ const EventForm = ({ userId, type }: EventFormProps) => {
             )}
           />
         </div>
-        <Button type="submit">Submit</Button>
+
+        <Button
+          type="submit"
+          size="lg"
+          disabled={form.formState.isSubmitting}
+          className="button col-span-2 w-full"
+        >
+          {form.formState.isSubmitting ? "Submitting..." : `${type} Event`}
+        </Button>
       </form>
     </Form>
   );
