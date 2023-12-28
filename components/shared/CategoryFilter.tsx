@@ -28,29 +28,6 @@ const CategoryFilter = () => {
     getCategories();
   }, []);
 
-  // useEffect(() => {
-  //   const delayDebounceFn = setTimeout(() => {
-  //     let newUrl = "";
-
-  //     if (categories) {
-  //       newUrl = formUrlQuery({
-  //         params: searchParams.toString(),
-  //         key: "categories",
-  //         value: categories,
-  //       });
-  //     } else {
-  //       newUrl = removeKeysFromQuery({
-  //         params: searchParams.toString(),
-  //         keysToRemove: ["categories"],
-  //       });
-  //     }
-
-  //     router.push(newUrl, { scroll: false });
-  //   }, 300);
-
-  //   return () => clearTimeout(delayDebounceFn);
-  // }, [categories, searchParams, router]);
-
   const onSelectCategory = (category: string) => {
     let newUrl = "";
 
