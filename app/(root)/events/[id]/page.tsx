@@ -41,7 +41,7 @@ const EventDetails = async ({
                     {event.isFree ? "Free" : `$${event.price}`}
                   </p>
 
-                  <p className="p-medium-16 rounded-full bg-grey-500/10 px-4 py-2.5 text-grey-500">
+                  <p className="p-medium-16 capitalize rounded-full bg-grey-500/10 px-4 py-2.5 text-grey-500">
                     {event.category.name}
                   </p>
                 </div>
